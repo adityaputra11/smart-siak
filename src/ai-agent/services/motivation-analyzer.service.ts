@@ -47,8 +47,7 @@ export class MotivationAnalyzerService {
   private determineMotivationType(
     studentMotivation: StudentMotivationDto,
   ): string {
-    const { motivationLevel, motivationDescription, goals, interests } =
-      studentMotivation;
+    const { motivationLevel, goals, interests } = studentMotivation;
 
     // Simple logic to determine motivation type
     if (motivationLevel >= 8) {

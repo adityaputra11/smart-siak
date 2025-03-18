@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  UseGuards 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -64,22 +64,21 @@ export class StudentController {
   @Roles(UserRole.ADMIN, UserRole.STUDENT)
   @Patch(':id')
   update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateStudentDto: UpdateStudentDto,
     @CurrentUser() user,
   ) {
     // Allow students to update only their own profile
     if (user.role === UserRole.STUDENT) {
       // First check if this student belongs to the current user
-      return this.studentService.findByUserId(user.id)
-        .then(student => {
-          if (student.id !== id) {
-            throw new Error('You can only update your own profile');
-          }
-          return this.studentService.update(id, updateStudentDto);
-        });
+      return this.studentService.findByUserId(user.id).then((student) => {
+        if (student.id !== id) {
+          throw new Error('You can only update your own profile');
+        }
+        return this.studentService.update(id, updateStudentDto);
+      });
     }
-    
+
     // Admins can update any student
     return this.studentService.update(id, updateStudentDto);
   }
