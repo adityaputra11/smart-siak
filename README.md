@@ -21,23 +21,27 @@ A smart academic system with an AI agent that uses the Perplexity API to recomme
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/smart-siak.git
 cd smart-siak
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables
+
 ```bash
 # Create a .env file in the root directory and add your Perplexity API key
 PERPLEXITY_API_KEY=your_perplexity_api_key_here
 ```
 
 4. Start the development server
+
 ```bash
 npm run start:dev
 ```
@@ -45,11 +49,13 @@ npm run start:dev
 ## API Endpoints
 
 ### Generate Study Plan
+
 ```
 POST /ai-agent/study-plan
 ```
 
 Request body example:
+
 ```json
 {
   "studentId": "S12345",
@@ -57,7 +63,11 @@ Request body example:
   "academicLevel": "Undergraduate",
   "subjects": ["Mathematics", "Computer Science", "Physics"],
   "interests": ["Programming", "Machine Learning", "Game Development"],
-  "goals": ["Improve GPA", "Master programming concepts", "Prepare for internship"],
+  "goals": [
+    "Improve GPA",
+    "Master programming concepts",
+    "Prepare for internship"
+  ],
   "motivationLevel": 7,
   "motivationDescription": "I'm generally motivated but sometimes struggle with difficult concepts and lose focus.",
   "learningStyle": "Visual and hands-on",
@@ -92,6 +102,7 @@ The system uses a NestJS backend with the following components:
 ## Development
 
 ### Running Tests
+
 ```bash
 # Unit tests
 npm run test
@@ -104,6 +115,7 @@ npm run test:cov
 ```
 
 ### Building for Production
+
 ```bash
 npm run build
 npm run start:prod

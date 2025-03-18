@@ -17,10 +17,7 @@ export class PerplexityApiService {
     }
   }
 
-  async generateCompletion(
-    prompt: string,
-    model = 'sonar-medium-online',
-  ): Promise<string> {
+  async generateCompletion(prompt: string, model = 'r1-1776'): Promise<string> {
     if (!this.apiKey) {
       throw new Error('Perplexity API key is not configured');
     }
