@@ -1,0 +1,26 @@
+{
+  "studentId": "S12345",
+  "name": "John Doe",
+  "academicLevel": "Undergraduate",
+  "subjects": ["Mathematics", "Computer Science", "Physics"],
+  "interests": ["Programming", "Machine Learning", "Game Development"],
+  "goals": ["Improve GPA", "Master programming concepts", "Prepare for internship"],
+  "motivationLevel": 7,
+  "motivationDescription": "I'm generally motivated but sometimes struggle with difficult concepts and lose focus.",
+  "learningStyle": "Visual and hands-on",
+  "timeAvailability": 20,
+  "previousPerformance": [
+    {
+      "subject": "Mathematics",
+      "grade": "B+"
+    },
+    {
+      "subject": "Computer Science",
+      "grade": "A-"
+    },
+    {
+      "subject": "Physics",
+      "grade": "B"
+    }
+  ]
+}
