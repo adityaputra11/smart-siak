@@ -8,11 +8,11 @@ import {
   OneToOne,
   JoinColumn,
 } from 'typeorm';
-import { StudentSubject } from '../../subject/entities/student-subject.entity';
 import { User } from '../../auth/entities/user.entity';
+import { Subject } from '../../subject/entities/subject.entity';
 
 @Entity()
-export class Student {
+export class Lecturer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -20,7 +20,7 @@ export class Student {
   name: string;
 
   @Column({ unique: true })
-  nim: string;
+  nip: string;
 
   @Column()
   email: string;
@@ -29,7 +29,10 @@ export class Student {
   phone: string;
 
   @Column({ nullable: true })
-  address: string;
+  department: string;
+
+  @Column({ nullable: true })
+  specialization: string;
 
   @Column({ default: true })
   isActive: boolean;
@@ -40,13 +43,13 @@ export class Student {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => StudentSubject, (studentSubject) => studentSubject.student)
-  studentSubjects: StudentSubject[];
-
+  @OneToMany(() => Subject, (subject) => subject.lecturer)
+  subjects: Subject[];
+  
   @OneToOne(() => User)
   @JoinColumn({ name: 'userId' })
   user: User;
-
+  
   @Column({ nullable: true })
   userId: string;
 }

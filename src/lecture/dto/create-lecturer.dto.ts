@@ -1,13 +1,13 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateStudentDto {
+export class CreateLecturerDto {
   @IsNotEmpty()
   @IsString()
   name: string;
 
   @IsNotEmpty()
   @IsString()
-  nim: string;
+  nip: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -19,8 +19,12 @@ export class CreateStudentDto {
 
   @IsOptional()
   @IsString()
-  address?: string;
-  
+  department?: string;
+
+  @IsOptional()
+  @IsString()
+  specialization?: string;
+
   @IsOptional()
   @IsString()
   userId?: string;
