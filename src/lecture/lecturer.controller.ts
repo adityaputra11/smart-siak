@@ -1,5 +1,4 @@
 import {
-  Controller,
   Get,
   Post,
   Body,
@@ -17,8 +16,10 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../auth/entities/user.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { ApiController } from '../common/decorators/controller-api.decorator';
+import { API_PATHS } from '../common/constants/api-paths.constants';
 
-@Controller('lecturers')
+@ApiController(API_PATHS.LECTURERS.ROOT)
 export class LecturerController {
   constructor(private readonly lecturerService: LecturerService) {}
 
@@ -31,7 +32,7 @@ export class LecturerController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Post('with-user')
+  @Post(API_PATHS.LECTURERS.WITH_USER)
   createWithUser(@Body() createLecturerWithUserDto: CreateLecturerWithUserDto) {
     return this.lecturerService.createWithUser(createLecturerWithUserDto);
   }
@@ -43,13 +44,13 @@ export class LecturerController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Get(API_PATHS.LECTURERS.PROFILE)
   getProfile(@CurrentUser() user) {
     return this.lecturerService.findByUserId(user.id);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('nip/:nip')
+  @Get(`${API_PATHS.LECTURERS.BY_NIP}/:nip`)
   findByNip(@Param('nip') nip: string) {
     return this.lecturerService.findByNip(nip);
   }

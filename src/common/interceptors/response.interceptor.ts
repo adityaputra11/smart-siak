@@ -5,18 +5,13 @@ import {
   CallHandler,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import {
-  createSuccessResponse,
-  createErrorResponse,
-} from '../utils/response.util';
 
 /**
  * Global interceptor to standardize API responses
- * Wraps successful responses in a standard format
- * Transforms errors into a standard error response format
  */
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {
@@ -30,33 +25,71 @@ export class ResponseInterceptor implements NestInterceptor {
         }
 
         // Format the response
-        return createSuccessResponse(data);
+        return {
+          success: true,
+          data,
+          timestamp: new Date().toISOString(),
+        };
       }),
 
       // Transform errors
       catchError((error) => {
         let status = HttpStatus.INTERNAL_SERVER_ERROR;
         let message = 'Internal server error';
-        let details = undefined;
+        let errorResponse;
 
-        // Handle HttpExceptions
+        // Handle validation errors specifically
+        if (
+          error instanceof BadRequestException &&
+          error.getResponse() &&
+          typeof error.getResponse() === 'object'
+        ) {
+          const response = error.getResponse() as any;
+          
+          if (response.errors && typeof response.errors === 'object') {
+            // This is a validation error with field details
+            errorResponse = {
+              success: false,
+              error: {
+                code: 400,
+                message: response.message || 'Validation failed',
+                fields: response.errors
+              },
+              timestamp: new Date().toISOString()
+            };
+            
+            return throwError(() => new HttpException(errorResponse, 400));
+          }
+        }
+        
+        // Handle other HttpExceptions
         if (error instanceof HttpException) {
           status = error.getStatus();
           const response = error.getResponse();
 
           if (typeof response === 'object' && response !== null) {
+            // Check if it's already our format
+            if (response['success'] === false && response['error']) {
+              return throwError(() => error);
+            }
+            
             message = response['message'] || error.message;
-            details = response['error'] || undefined;
           } else {
-            message = error.message;
+            message = response as string || error.message;
           }
         } else if (error instanceof Error) {
           message = error.message;
-          details = error.stack;
         }
 
-        // Create standardized error response
-        const errorResponse = createErrorResponse(status, message, details);
+        // Create standardized error response for non-validation errors
+        errorResponse = {
+          success: false,
+          error: {
+            code: status,
+            message: message
+          },
+          timestamp: new Date().toISOString()
+        };
 
         // Return the error response
         return throwError(() => new HttpException(errorResponse, status));

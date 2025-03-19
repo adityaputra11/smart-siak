@@ -1,126 +1,75 @@
-# Smart SIAK - Academic Recommendation System
+# Smart SIAK API
 
-A smart academic system with an AI agent that uses the Perplexity API to recommend personalized study plans based on student motivation.
+## API Structure
 
-## Features
-
-- Student motivation assessment
-- AI-powered study plan generation
-- Personalized learning recommendations
-- Motivation-based academic strategies
-- Weekly schedule creation
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14 or higher)
-- npm or yarn
-- Perplexity API key
-
-### Installation
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/smart-siak.git
-cd smart-siak
-```
-
-2. Install dependencies
-
-```bash
-npm install
-```
-
-3. Set up environment variables
-
-```bash
-# Create a .env file in the root directory and add your Perplexity API key
-PERPLEXITY_API_KEY=your_perplexity_api_key_here
-```
-
-4. Start the development server
-
-```bash
-npm run start:dev
-```
-
-## API Endpoints
-
-### Generate Study Plan
+The API follows a standardized structure with versioning:
 
 ```
-POST /ai-agent/study-plan
+/api/v1/[resource]/[action]
 ```
 
-Request body example:
+### Example Endpoints
+
+- Authentication: `/api/v1/auth/login`
+- Lecturers: `/api/v1/lecturers`
+- Student Profile: `/api/v1/students/profile`
+
+## API Versioning
+
+API versioning is implemented using URI versioning:
+
+- Default version: v1
+- Format: `/api/v[version_number]/[resource]`
+
+## Error Response Format
+
+All API errors follow a standardized format:
 
 ```json
 {
-  "studentId": "S12345",
-  "name": "John Doe",
-  "academicLevel": "Undergraduate",
-  "subjects": ["Mathematics", "Computer Science", "Physics"],
-  "interests": ["Programming", "Machine Learning", "Game Development"],
-  "goals": [
-    "Improve GPA",
-    "Master programming concepts",
-    "Prepare for internship"
-  ],
-  "motivationLevel": 7,
-  "motivationDescription": "I'm generally motivated but sometimes struggle with difficult concepts and lose focus.",
-  "learningStyle": "Visual and hands-on",
-  "timeAvailability": 20,
-  "previousPerformance": [
-    {
-      "subject": "Mathematics",
-      "grade": "B+"
-    },
-    {
-      "subject": "Computer Science",
-      "grade": "A-"
-    },
-    {
-      "subject": "Physics",
-      "grade": "B"
+  "success": false,
+  "error": {
+    "code": 400,
+    "message": "Validation failed",
+    "details": {
+      "validationErrors": {
+        "email": ["email must be a valid email address"],
+        "password": ["password must be at least 6 characters"]
+      },
+      "path": "/api/v1/auth/register",
+      "method": "POST"
     }
-  ]
+  },
+  "timestamp": "2025-03-19T01:21:22.000Z"
 }
 ```
 
-Response: A detailed study plan tailored to the student's motivation and learning style.
+## Success Response Format
 
-## Architecture
+All successful API responses follow a standardized format:
 
-The system uses a NestJS backend with the following components:
-
-- **AI Agent Module**: Handles the integration with Perplexity API and generates personalized study plans
-- **Perplexity API Service**: Manages communication with the Perplexity AI service
-- **DTOs**: Define the data structures for student motivation input and study plan output
-
-## Development
-
-### Running Tests
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
+```json
+{
+  "success": true,
+  "data": {
+    // Response data here
+  },
+  "message": "Optional success message",
+  "timestamp": "2025-03-19T01:21:22.000Z"
+}
 ```
 
-### Building for Production
+## API Constants
 
-```bash
-npm run build
-npm run start:prod
+API paths are defined as constants in `src/common/constants/api-paths.constants.ts` to ensure consistency across the application.
+
+## API Controllers
+
+Controllers use the `ApiController` decorator which automatically applies versioning:
+
+```typescript
+@ApiController(API_PATHS.LECTURERS.ROOT)
+export class LecturerController {
+  // Controller methods
+}
 ```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.

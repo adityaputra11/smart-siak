@@ -3,9 +3,9 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
+  BadRequestException,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { createErrorResponse } from '../utils/response.util';
+import { Response } from 'express';
 
 /**
  * Global exception filter to standardize error responses
@@ -15,47 +15,61 @@ export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-
-    // Get the exception response
     const exceptionResponse = exception.getResponse();
 
-    // Check if the response is already in our standard format
+    // If the response is already in our standard format, return it as is
     if (
       typeof exceptionResponse === 'object' &&
       exceptionResponse !== null &&
       'success' in exceptionResponse &&
-      exceptionResponse['success'] === false
+      exceptionResponse['success'] === false &&
+      'error' in exceptionResponse
     ) {
-      // Response is already formatted, return it as is
       return response.status(status).json(exceptionResponse);
     }
 
-    // Extract message and details from the exception
-    let message = 'Internal server error';
-    let details = undefined;
+    // Handle validation errors from class-validator
+    if (exception instanceof BadRequestException) {
+      const badRequestResponse = exceptionResponse as any;
+      
+      if (
+        typeof badRequestResponse === 'object' &&
+        badRequestResponse !== null &&
+        'errors' in badRequestResponse
+      ) {
+        const errorResponse = {
+          success: false,
+          error: {
+            code: status,
+            message: badRequestResponse.message || 'Validation failed',
+            fields: badRequestResponse.errors
+          },
+          timestamp: new Date().toISOString()
+        };
+        
+        return response.status(status).json(errorResponse);
+      }
+    }
 
+    // For other types of errors, create a standard response
+    let message = 'Internal server error';
+    
     if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
       message = exceptionResponse['message'] || exception.message;
-      details = exceptionResponse['error'] || undefined;
     } else if (typeof exceptionResponse === 'string') {
       message = exceptionResponse;
     }
 
-    // Create a standardized error response
-    const errorResponse = createErrorResponse(
-      status,
-      message,
-      details
-        ? details
-        : {
-            path: request.url,
-            method: request.method,
-          },
-    );
+    const errorResponse = {
+      success: false,
+      error: {
+        code: status,
+        message: message
+      },
+      timestamp: new Date().toISOString()
+    };
 
-    // Send the response
     response.status(status).json(errorResponse);
   }
 }

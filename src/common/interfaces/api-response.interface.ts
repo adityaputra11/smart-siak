@@ -17,6 +17,7 @@ export interface ApiErrorResponse {
     code: string | number;
     message: string;
     details?: any;
+    fields?: Record<string, string[]>;
   };
   timestamp: string;
 }
