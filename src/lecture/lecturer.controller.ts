@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  UseGuards 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { LecturerService } from './lecturer.service';
 import { CreateLecturerDto } from './dto/create-lecturer.dto';
@@ -64,22 +64,21 @@ export class LecturerController {
   @Roles(UserRole.ADMIN, UserRole.LECTURER)
   @Patch(':id')
   update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateLecturerDto: UpdateLecturerDto,
     @CurrentUser() user,
   ) {
     // Allow lecturers to update only their own profile
     if (user.role === UserRole.LECTURER) {
       // First check if this lecturer belongs to the current user
-      return this.lecturerService.findByUserId(user.id)
-        .then(lecturer => {
-          if (lecturer.id !== id) {
-            throw new Error('You can only update your own profile');
-          }
-          return this.lecturerService.update(id, updateLecturerDto);
-        });
+      return this.lecturerService.findByUserId(user.id).then((lecturer) => {
+        if (lecturer.id !== id) {
+          throw new Error('You can only update your own profile');
+        }
+        return this.lecturerService.update(id, updateLecturerDto);
+      });
     }
-    
+
     // Admins can update any lecturer
     return this.lecturerService.update(id, updateLecturerDto);
   }

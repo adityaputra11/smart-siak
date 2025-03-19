@@ -20,7 +20,7 @@ export class CreateStudentDto {
   @IsOptional()
   @IsString()
   address?: string;
-  
+
   @IsOptional()
   @IsString()
   userId?: string;
