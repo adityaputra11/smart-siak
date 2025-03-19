@@ -1,16 +1,8 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Get,
-  Request,
-} from '@nestjs/common';
+import { Post, Body, UseGuards, Get, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Roles } from './decorators/roles.decorator';
 import { UserRole } from './entities/user.entity';
@@ -29,7 +21,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post(API_PATHS.AUTH.LOGIN)
-  async login(@Request() req, @Body() loginDto: LoginDto) {
+  async login(@Request() req) {
     return this.authService.login(req.user);
   }
 

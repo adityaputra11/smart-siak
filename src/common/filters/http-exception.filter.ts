@@ -32,7 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // Handle validation errors from class-validator
     if (exception instanceof BadRequestException) {
       const badRequestResponse = exceptionResponse as any;
-      
+
       if (
         typeof badRequestResponse === 'object' &&
         badRequestResponse !== null &&
@@ -43,18 +43,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
           error: {
             code: status,
             message: badRequestResponse.message || 'Validation failed',
-            fields: badRequestResponse.errors
+            fields: badRequestResponse.errors,
           },
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
-        
+
         return response.status(status).json(errorResponse);
       }
     }
 
     // For other types of errors, create a standard response
     let message = 'Internal server error';
-    
+
     if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
       message = exceptionResponse['message'] || exception.message;
     } else if (typeof exceptionResponse === 'string') {
@@ -65,9 +65,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
       success: false,
       error: {
         code: status,
-        message: message
+        message: message,
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     response.status(status).json(errorResponse);

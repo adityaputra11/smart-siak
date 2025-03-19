@@ -45,7 +45,7 @@ export class ResponseInterceptor implements NestInterceptor {
           typeof error.getResponse() === 'object'
         ) {
           const response = error.getResponse() as any;
-          
+
           if (response.errors && typeof response.errors === 'object') {
             // This is a validation error with field details
             errorResponse = {
@@ -53,15 +53,15 @@ export class ResponseInterceptor implements NestInterceptor {
               error: {
                 code: 400,
                 message: response.message || 'Validation failed',
-                fields: response.errors
+                fields: response.errors,
               },
-              timestamp: new Date().toISOString()
+              timestamp: new Date().toISOString(),
             };
-            
+
             return throwError(() => new HttpException(errorResponse, 400));
           }
         }
-        
+
         // Handle other HttpExceptions
         if (error instanceof HttpException) {
           status = error.getStatus();
@@ -72,10 +72,10 @@ export class ResponseInterceptor implements NestInterceptor {
             if (response['success'] === false && response['error']) {
               return throwError(() => error);
             }
-            
+
             message = response['message'] || error.message;
           } else {
-            message = response as string || error.message;
+            message = (response as string) || error.message;
           }
         } else if (error instanceof Error) {
           message = error.message;
@@ -86,9 +86,9 @@ export class ResponseInterceptor implements NestInterceptor {
           success: false,
           error: {
             code: status,
-            message: message
+            message: message,
           },
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
 
         // Return the error response
