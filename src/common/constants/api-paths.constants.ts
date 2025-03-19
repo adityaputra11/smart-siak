@@ -11,6 +11,7 @@ export const API_PATHS = {
     PROFILE: 'profile',
     ADMIN: 'admin',
     STAFF: 'staff',
+    ME: 'me',
   },
   USERS: {
     ROOT: 'users',

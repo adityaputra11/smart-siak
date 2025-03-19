@@ -9,6 +9,7 @@ import { UserRole } from './entities/user.entity';
 import { RolesGuard } from './guards/roles.guard';
 import { ApiController } from '../common/decorators/controller-api.decorator';
 import { API_PATHS } from '../common/constants/api-paths.constants';
+import { LoginDto } from './dto/login.dto';
 
 @ApiController(API_PATHS.AUTH.ROOT)
 export class AuthController {
@@ -21,13 +22,19 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post(API_PATHS.AUTH.LOGIN)
-  async login(@Request() req) {
+  async login(@Request() req, @Body() loginDto: LoginDto) {
     return this.authService.login(req.user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(API_PATHS.AUTH.PROFILE)
   getProfile(@CurrentUser() user) {
+    return this.authService.getProfile(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(API_PATHS.AUTH.ME)
+  getMe(@CurrentUser() user) {
     return this.authService.getProfile(user.id);
   }
 
