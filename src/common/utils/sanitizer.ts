@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import sanitizeHtmlLib from 'sanitize-html';
+import * as sanitizeHtmlLib from 'sanitize-html';
 
 /**
  * Sanitizes HTML input to prevent XSS attacks.
@@ -16,7 +16,7 @@ export function sanitizeHtml(html: string | undefined | null): string {
   }
 
   // Configure sanitize-html to strip all HTML tags
-  const options: sanitizeHtmlLib.IOptions = {
+  const options = {
     allowedTags: [], // No HTML tags allowed
     allowedAttributes: {}, // No attributes allowed
     disallowedTagsMode: 'discard', // Remove disallowed tags completely

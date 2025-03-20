@@ -19,10 +19,11 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../auth/entities/user.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PaginationDto } from '../common';
+import { SearchDto } from 'src/common/dto/search.dto';
 
 @Controller('students')
 export class StudentController {
-  constructor(private readonly studentService: StudentService) {}
+  constructor(private readonly studentService: StudentService) { }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -40,8 +41,8 @@ export class StudentController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.studentService.findAll(paginationDto);
+  findAll(@Query() searchAndPaginationDto: SearchDto) {
+    return this.studentService.findAll(searchAndPaginationDto);
   }
 
   @UseGuards(JwtAuthGuard)

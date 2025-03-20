@@ -21,7 +21,6 @@ export function applySearch<T>(
     return queryBuilder;
   }
 
-  // Determine which fields to search in
   const searchFields = fields
     ? fields.split(',').map((field) => field.trim())
     : defaultSearchFields;
@@ -33,14 +32,12 @@ export function applySearch<T>(
   const alias = queryBuilder.alias;
   const searchTerm = `%${query.trim()}%`;
 
-  // Build OR conditions for each field
-  queryBuilder.andWhere(
-    new Array(searchFields.length)
-      .fill(`${alias}.??::text ILIKE :searchTerm`)
-      .map((condition, index) => condition.replace('??', searchFields[index]))
-      .join(' OR '),
-    { searchTerm },
-  );
+  const whereConditions = searchFields.map((field) => {
+    return `LOWER(${alias}.${field}) LIKE LOWER(:searchTerm)`;
+  });
+
+  queryBuilder.andWhere(whereConditions.join(' OR '), { searchTerm });
+
 
   return queryBuilder;
 }
@@ -57,13 +54,14 @@ export async function searchAndPaginate<T>(
   searchDto: SearchDto,
   defaultSearchFields: string[] = [],
 ): Promise<PaginatedResponse<T>> {
-  // Apply search filters
+  console.log('Default search fields:', defaultSearchFields);
+  console.log('Search DTO:', searchDto);
+
   const searchedQueryBuilder = applySearch(
     queryBuilder,
     searchDto,
     defaultSearchFields,
   );
 
-  // Apply pagination
   return paginate(searchedQueryBuilder, searchDto);
 }

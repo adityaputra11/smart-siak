@@ -12,6 +12,7 @@ import { CreateStudentWithUserDto } from './dto/create-student-with-user.dto';
 import { AuthService } from '../auth/auth.service';
 import { UserRole } from '../auth/entities/user.entity';
 import { PaginationDto, PaginatedResponse, paginate } from '../common';
+import { searchAndPaginate } from 'src/common/utils/search.util';
 
 @Injectable()
 export class StudentService {
@@ -19,7 +20,7 @@ export class StudentService {
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
     const existingStudent = await this.studentRepository.findOne({
@@ -70,7 +71,7 @@ export class StudentService {
         .leftJoinAndSelect('student.studentSubjects', 'studentSubjects')
         .leftJoinAndSelect('studentSubjects.subject', 'subject');
 
-      return paginate<Student>(queryBuilder, paginationDto);
+      return searchAndPaginate<Student>(queryBuilder, paginationDto, ['nim', 'name', 'email', 'phone']);
     }
 
     // If no pagination is requested, return all records (legacy behavior)
