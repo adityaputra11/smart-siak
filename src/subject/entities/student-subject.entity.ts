@@ -17,17 +17,17 @@ export class StudentSubject {
   id: string;
 
   @ManyToOne(() => Student, (student) => student.studentSubjects)
-  @JoinColumn({ name: 'studentId' })
+  @JoinColumn({ name: 'student_id' })
   student: Student;
 
-  @Column()
+  @Column({ name: 'student_id' })
   studentId: string;
 
   @ManyToOne(() => Subject, (subject) => subject.studentSubjects)
-  @JoinColumn({ name: 'subjectId' })
+  @JoinColumn({ name: 'subject_id' })
   subject: Subject;
 
-  @Column()
+  @Column({ name: 'subject_id' })
   subjectId: string;
 
   @Column({ nullable: true })
@@ -39,12 +39,12 @@ export class StudentSubject {
   @Column({ default: 'enrolled' })
   status: string; // enrolled, completed, dropped
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
 }

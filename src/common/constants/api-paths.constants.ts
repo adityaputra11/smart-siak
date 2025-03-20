@@ -36,6 +36,11 @@ export const API_PATHS = {
     ROOT: 'subjects',
     ENROLLMENT: 'enrollment',
   },
+  SEMESTERS: {
+    ROOT: 'semesters',
+    ACTIVE: 'active',
+    DASHBOARD: 'dashboard',
+  },
   AI_AGENT: {
     ROOT: 'ai-agent',
     STUDY_PLAN: 'study-plan',

@@ -34,22 +34,22 @@ export class Lecturer {
   @Column({ nullable: true })
   specialization: string;
 
-  @Column({ default: true })
+  @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @OneToMany(() => Subject, (subject) => subject.lecturer)
   subjects: Subject[];
-  
+
   @OneToOne(() => User)
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
-  
-  @Column({ nullable: true })
+
+  @Column({ nullable: true, name: 'user_id' })
   userId: string;
 }

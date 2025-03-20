@@ -11,6 +11,7 @@ import {
 import { StudentSubject } from './student-subject.entity';
 import { Lecture } from '../../lecture/entities/lecture.entity';
 import { Lecturer } from '../../lecture/entity/lecturer.entity';
+import { Semester } from '../../semester/entities/semester.entity';
 
 @Entity()
 export class Subject {
@@ -29,13 +30,13 @@ export class Subject {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ default: true })
+  @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @OneToMany(() => StudentSubject, (studentSubject) => studentSubject.subject)
@@ -47,9 +48,18 @@ export class Subject {
   @ManyToOne(() => Lecturer, (lecturer) => lecturer.subjects, {
     nullable: true,
   })
-  @JoinColumn({ name: 'lecturerId' })
+  @JoinColumn({ name: 'lecturer_id' })
   lecturer: Lecturer;
 
   @Column({ nullable: true })
   lecturerId: string;
+
+  @ManyToOne(() => Semester, (semester) => semester.subjects, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'semester_id' })
+  semester: Semester;
+
+  @Column({ nullable: true })
+  semesterId: string;
 }
