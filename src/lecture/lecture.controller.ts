@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../auth/entities/user.entity';
+import { PaginationDto } from '../common';
 
 @Controller('lectures')
 export class LectureController {
@@ -30,14 +31,17 @@ export class LectureController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.lectureService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.lectureService.findAll(paginationDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('subject/:subjectId')
-  findBySubject(@Param('subjectId') subjectId: string) {
-    return this.lectureService.findBySubject(subjectId);
+  findBySubject(
+    @Param('subjectId') subjectId: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.lectureService.findBySubject(subjectId, paginationDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -45,8 +49,13 @@ export class LectureController {
   findByDateRange(
     @Query('start') startDate: string,
     @Query('end') endDate: string,
+    @Query() paginationDto: PaginationDto,
   ) {
-    return this.lectureService.findByDateRange(startDate, endDate);
+    return this.lectureService.findByDateRange(
+      startDate,
+      endDate,
+      paginationDto,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

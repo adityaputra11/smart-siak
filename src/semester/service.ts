@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { Semester } from './entities/semester.entity';
@@ -25,7 +29,9 @@ export class SemesterService {
     });
 
     if (existingSemester) {
-      throw new ConflictException(`Semester with code ${createSemesterDto.code} already exists`);
+      throw new ConflictException(
+        `Semester with code ${createSemesterDto.code} already exists`,
+      );
     }
 
     // If isActive is true, set all other semesters to inactive
@@ -68,12 +74,18 @@ export class SemesterService {
     return semester;
   }
 
-  async update(id: string, updateSemesterDto: UpdateSemesterDto): Promise<Semester> {
+  async update(
+    id: string,
+    updateSemesterDto: UpdateSemesterDto,
+  ): Promise<Semester> {
     const semester = await this.findOne(id);
 
     // If isActive is being set to true, set all other semesters to inactive
     if (updateSemesterDto.isActive) {
-      await this.semesterRepository.update({ id: Not(id) }, { isActive: false });
+      await this.semesterRepository.update(
+        { id: Not(id) },
+        { isActive: false },
+      );
     }
 
     Object.assign(semester, updateSemesterDto);
@@ -85,7 +97,10 @@ export class SemesterService {
     await this.semesterRepository.remove(semester);
   }
 
-  async getStudentSemesterDashboard(studentId: string, semesterId?: string): Promise<any> {
+  async getStudentSemesterDashboard(
+    studentId: string,
+    semesterId?: string,
+  ): Promise<any> {
     // If semesterId is not provided, use the active semester
     let targetSemesterId = semesterId;
     if (!targetSemesterId) {
@@ -107,7 +122,7 @@ export class SemesterService {
 
     // Filter student subjects that belong to the target semester
     const semesterStudentSubjects = studentSubjects.filter(
-      ss => ss.subject.semesterId === targetSemesterId
+      (ss) => ss.subject.semesterId === targetSemesterId,
     );
 
     // Calculate GPA and total credits
@@ -115,28 +130,51 @@ export class SemesterService {
     let totalCredits = 0;
     let completedCredits = 0;
 
-    semesterStudentSubjects.forEach(ss => {
+    semesterStudentSubjects.forEach((ss) => {
       if (ss.status === 'completed' && ss.grade) {
         const credits = ss.subject.credits;
         totalCredits += credits;
-        
+
         // Convert grade to points
         let points = 0;
         switch (ss.grade) {
-          case 'A': points = 4.0; break;
-          case 'A-': points = 3.7; break;
-          case 'B+': points = 3.3; break;
-          case 'B': points = 3.0; break;
-          case 'B-': points = 2.7; break;
-          case 'C+': points = 2.3; break;
-          case 'C': points = 2.0; break;
-          case 'C-': points = 1.7; break;
-          case 'D+': points = 1.3; break;
-          case 'D': points = 1.0; break;
-          case 'F': points = 0.0; break;
-          default: points = 0.0;
+          case 'A':
+            points = 4.0;
+            break;
+          case 'A-':
+            points = 3.7;
+            break;
+          case 'B+':
+            points = 3.3;
+            break;
+          case 'B':
+            points = 3.0;
+            break;
+          case 'B-':
+            points = 2.7;
+            break;
+          case 'C+':
+            points = 2.3;
+            break;
+          case 'C':
+            points = 2.0;
+            break;
+          case 'C-':
+            points = 1.7;
+            break;
+          case 'D+':
+            points = 1.3;
+            break;
+          case 'D':
+            points = 1.0;
+            break;
+          case 'F':
+            points = 0.0;
+            break;
+          default:
+            points = 0.0;
         }
-        
+
         totalPoints += points * credits;
         completedCredits += credits;
       }
@@ -149,7 +187,7 @@ export class SemesterService {
 
     return {
       semester,
-      enrolledSubjects: semesterStudentSubjects.map(ss => ({
+      enrolledSubjects: semesterStudentSubjects.map((ss) => ({
         id: ss.id,
         subject: {
           id: ss.subject.id,
@@ -157,35 +195,44 @@ export class SemesterService {
           code: ss.subject.code,
           credits: ss.subject.credits,
           description: ss.subject.description,
-          lecturer: ss.subject.lecturer ? {
-            id: ss.subject.lecturer.id,
-            name: ss.subject.lecturer.name,
-          } : null,
+          lecturer: ss.subject.lecturer
+            ? {
+                id: ss.subject.lecturer.id,
+                name: ss.subject.lecturer.name,
+              }
+            : null,
         },
         grade: ss.grade,
         score: ss.score,
         status: ss.status,
       })),
-      availableSubjects: subjects.filter(
-        subject => !semesterStudentSubjects.some(ss => ss.subjectId === subject.id)
-      ).map(subject => ({
-        id: subject.id,
-        name: subject.name,
-        code: subject.code,
-        credits: subject.credits,
-        description: subject.description,
-        lecturer: subject.lecturer ? {
-          id: subject.lecturer.id,
-          name: subject.lecturer.name,
-        } : null,
-      })),
+      availableSubjects: subjects
+        .filter(
+          (subject) =>
+            !semesterStudentSubjects.some((ss) => ss.subjectId === subject.id),
+        )
+        .map((subject) => ({
+          id: subject.id,
+          name: subject.name,
+          code: subject.code,
+          credits: subject.credits,
+          description: subject.description,
+          lecturer: subject.lecturer
+            ? {
+                id: subject.lecturer.id,
+                name: subject.lecturer.name,
+              }
+            : null,
+        })),
       stats: {
         totalCredits,
         completedCredits,
         gpa: parseFloat(gpa.toFixed(2)),
         enrolledSubjectsCount: semesterStudentSubjects.length,
-        completedSubjectsCount: semesterStudentSubjects.filter(ss => ss.status === 'completed').length,
-      }
+        completedSubjectsCount: semesterStudentSubjects.filter(
+          (ss) => ss.status === 'completed',
+        ).length,
+      },
     };
   }
 }

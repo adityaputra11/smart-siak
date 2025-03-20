@@ -11,6 +11,7 @@ import { UpdateStudentDto } from './dto/update-student.dto';
 import { CreateStudentWithUserDto } from './dto/create-student-with-user.dto';
 import { AuthService } from '../auth/auth.service';
 import { UserRole } from '../auth/entities/user.entity';
+import { PaginationDto, PaginatedResponse, paginate } from '../common';
 
 @Injectable()
 export class StudentService {
@@ -59,7 +60,20 @@ export class StudentService {
     return student;
   }
 
-  async findAll(): Promise<Student[]> {
+  async findAll(
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<Student> | Student[]> {
+    if (paginationDto) {
+      const queryBuilder = this.studentRepository
+        .createQueryBuilder('student')
+        .leftJoinAndSelect('student.user', 'user')
+        .leftJoinAndSelect('student.studentSubjects', 'studentSubjects')
+        .leftJoinAndSelect('studentSubjects.subject', 'subject');
+
+      return paginate<Student>(queryBuilder, paginationDto);
+    }
+
+    // If no pagination is requested, return all records (legacy behavior)
     return this.studentRepository.find({
       relations: ['user', 'studentSubjects', 'studentSubjects.subject'],
     });

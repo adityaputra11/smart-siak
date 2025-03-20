@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SubjectService } from './subject.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { CreateStudentSubjectDto } from './dto/create-student-subject.dto';
 import { UpdateStudentSubjectDto } from './dto/update-student-subject.dto';
+import { PaginationDto } from '../common';
 
 @Controller('subjects')
 export class SubjectController {
@@ -24,8 +26,8 @@ export class SubjectController {
   }
 
   @Get()
-  findAllSubjects() {
-    return this.subjectService.findAllSubjects();
+  findAllSubjects(@Query() paginationDto: PaginationDto) {
+    return this.subjectService.findAllSubjects(paginationDto);
   }
 
   @Get('code/:code')
@@ -84,12 +86,18 @@ export class SubjectController {
   }
 
   @Get(':id/students')
-  findStudentsBySubject(@Param('id') subjectId: string) {
-    return this.subjectService.findStudentsBySubject(subjectId);
+  findStudentsBySubject(
+    @Param('id') subjectId: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.subjectService.findStudentsBySubject(subjectId, paginationDto);
   }
 
   @Get('student/:studentId')
-  findSubjectsByStudent(@Param('studentId') studentId: string) {
-    return this.subjectService.findSubjectsByStudent(studentId);
+  findSubjectsByStudent(
+    @Param('studentId') studentId: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.subjectService.findSubjectsByStudent(studentId, paginationDto);
   }
 }

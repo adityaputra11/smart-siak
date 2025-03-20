@@ -9,10 +9,7 @@ import { Lecturer } from './entity/lecturer.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Lecture, Lecturer]),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Lecture, Lecturer]), AuthModule],
   controllers: [LectureController, LecturerController],
   providers: [LectureService, LecturerService],
   exports: [LectureService, LecturerService],

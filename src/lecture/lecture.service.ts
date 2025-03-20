@@ -4,6 +4,7 @@ import { Repository, Between } from 'typeorm';
 import { Lecture } from './entities/lecture.entity';
 import { CreateLectureDto } from './dto/create-lecture.dto';
 import { UpdateLectureDto } from './dto/update-lecture.dto';
+import { PaginationDto, PaginatedResponse, paginate } from '../common';
 
 @Injectable()
 export class LectureService {
@@ -21,7 +22,18 @@ export class LectureService {
     return this.lectureRepository.save(lecture);
   }
 
-  async findAll(): Promise<Lecture[]> {
+  async findAll(
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<Lecture> | Lecture[]> {
+    if (paginationDto) {
+      const queryBuilder = this.lectureRepository
+        .createQueryBuilder('lecture')
+        .leftJoinAndSelect('lecture.subject', 'subject')
+        .orderBy('lecture.startTime', 'ASC');
+
+      return paginate<Lecture>(queryBuilder, paginationDto);
+    }
+
     return this.lectureRepository.find({
       relations: ['subject'],
       order: { startTime: 'ASC' },
@@ -41,7 +53,20 @@ export class LectureService {
     return lecture;
   }
 
-  async findBySubject(subjectId: string): Promise<Lecture[]> {
+  async findBySubject(
+    subjectId: string,
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<Lecture> | Lecture[]> {
+    if (paginationDto) {
+      const queryBuilder = this.lectureRepository
+        .createQueryBuilder('lecture')
+        .leftJoinAndSelect('lecture.subject', 'subject')
+        .where('lecture.subjectId = :subjectId', { subjectId })
+        .orderBy('lecture.startTime', 'ASC');
+
+      return paginate<Lecture>(queryBuilder, paginationDto);
+    }
+
     return this.lectureRepository.find({
       where: { subjectId },
       relations: ['subject'],
@@ -52,9 +77,23 @@ export class LectureService {
   async findByDateRange(
     startDate: string,
     endDate: string,
-  ): Promise<Lecture[]> {
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<Lecture> | Lecture[]> {
     const startDateTime = new Date(startDate);
     const endDateTime = new Date(endDate);
+
+    if (paginationDto) {
+      const queryBuilder = this.lectureRepository
+        .createQueryBuilder('lecture')
+        .leftJoinAndSelect('lecture.subject', 'subject')
+        .where('lecture.startTime BETWEEN :startDateTime AND :endDateTime', {
+          startDateTime,
+          endDateTime,
+        })
+        .orderBy('lecture.startTime', 'ASC');
+
+      return paginate<Lecture>(queryBuilder, paginationDto);
+    }
 
     return this.lectureRepository.find({
       where: {

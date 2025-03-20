@@ -7,6 +7,7 @@ import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { StudentSubject } from './entities/student-subject.entity';
 import { CreateStudentSubjectDto } from './dto/create-student-subject.dto';
 import { UpdateStudentSubjectDto } from './dto/update-student-subject.dto';
+import { PaginationDto, PaginatedResponse, paginate } from '../common';
 
 @Injectable()
 export class SubjectService {
@@ -23,7 +24,15 @@ export class SubjectService {
     return this.subjectRepository.save(subject);
   }
 
-  async findAllSubjects(): Promise<Subject[]> {
+  async findAllSubjects(
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<Subject> | Subject[]> {
+    if (paginationDto) {
+      const queryBuilder = this.subjectRepository.createQueryBuilder('subject');
+
+      return paginate<Subject>(queryBuilder, paginationDto);
+    }
+
     return this.subjectRepository.find();
   }
 
@@ -124,14 +133,38 @@ export class SubjectService {
     }
   }
 
-  async findStudentsBySubject(subjectId: string): Promise<StudentSubject[]> {
+  async findStudentsBySubject(
+    subjectId: string,
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<StudentSubject> | StudentSubject[]> {
+    if (paginationDto) {
+      const queryBuilder = this.studentSubjectRepository
+        .createQueryBuilder('studentSubject')
+        .leftJoinAndSelect('studentSubject.student', 'student')
+        .where('studentSubject.subjectId = :subjectId', { subjectId });
+
+      return paginate<StudentSubject>(queryBuilder, paginationDto);
+    }
+
     return this.studentSubjectRepository.find({
       where: { subjectId },
       relations: ['student'],
     });
   }
 
-  async findSubjectsByStudent(studentId: string): Promise<StudentSubject[]> {
+  async findSubjectsByStudent(
+    studentId: string,
+    paginationDto?: PaginationDto,
+  ): Promise<PaginatedResponse<StudentSubject> | StudentSubject[]> {
+    if (paginationDto) {
+      const queryBuilder = this.studentSubjectRepository
+        .createQueryBuilder('studentSubject')
+        .leftJoinAndSelect('studentSubject.subject', 'subject')
+        .where('studentSubject.studentId = :studentId', { studentId });
+
+      return paginate<StudentSubject>(queryBuilder, paginationDto);
+    }
+
     return this.studentSubjectRepository.find({
       where: { studentId },
       relations: ['subject'],
