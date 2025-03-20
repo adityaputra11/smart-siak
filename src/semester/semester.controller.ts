@@ -1,5 +1,4 @@
 import {
-  Controller,
   Get,
   Post,
   Body,
@@ -52,7 +51,10 @@ export class SemesterController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSemesterDto: UpdateSemesterDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSemesterDto: UpdateSemesterDto,
+  ) {
     return this.semesterService.update(id, updateSemesterDto);
   }
 
@@ -69,7 +71,10 @@ export class SemesterController {
     @CurrentUser() user,
     @Query('semesterId') semesterId?: string,
   ) {
-    return this.semesterService.getStudentSemesterDashboard(user.studentId, semesterId);
+    return this.semesterService.getStudentSemesterDashboard(
+      user.studentId,
+      semesterId,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -79,6 +84,9 @@ export class SemesterController {
     @Param('studentId') studentId: string,
     @Query('semesterId') semesterId?: string,
   ) {
-    return this.semesterService.getStudentSemesterDashboard(studentId, semesterId);
+    return this.semesterService.getStudentSemesterDashboard(
+      studentId,
+      semesterId,
+    );
   }
 }

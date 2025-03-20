@@ -19,10 +19,10 @@ export class Semester {
   @Column({ unique: true })
   code: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', name: 'start_date' })
   startDate: Date;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'date', name: 'end_date' })
   endDate: Date;
 
   @Column({ default: false, name: 'is_active' })
